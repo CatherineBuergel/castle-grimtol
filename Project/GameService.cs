@@ -56,7 +56,7 @@ namespace CastleGrimtol.Project
       Commands.Add("Reset");
 
       Item EpiPen = new Item("EpiPen", "Kicks like a mule, saves like a lifeguard");
-      Item Phone = new Item("Phone", "Great for calling friends or 911");
+      Phone = new Item("Phone", "Great for calling friends or 911");
       Item Snack = new Item("Snack", "A filling, allergen free snack");
       Item Coffee = new Item("Coffee", "As long as it's not Hazelnut, you're probably safe");
       Item Muffin = new Item("Muffin", "This muffin is iterally surrounded by other pastries that contain nuts.");
@@ -69,7 +69,7 @@ namespace CastleGrimtol.Project
       //Items: game - if you use game then place fills up with people; coffee; 
       Room Main = new Room("Living room", @"You are at home in your living room. On your coffee table is an EpiPen,
        your phone, and a snack. To the north is your front door which leads to a Hiking Trail.");
-      LockedRoom FriendsHouse = new LockedRoom("Friends house", "Your friend's door is locked.", Phone);
+      FriendsHouse = new LockedRoom("Friends house", "Your friend's door is locked.", Phone);
       Console.WriteLine(FriendsHouse.UnlockedWith.Name);
       Room Hiking = new Room("Hiking Trail", @"
       You are on a dirt hiking trail, surrounded by trees and sunlight. You are hungry and pass a stranger,
