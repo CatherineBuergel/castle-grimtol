@@ -12,11 +12,11 @@ namespace CastleGrimtol.Project.Models
     public void Unlock(Item item)
     {
 
-      Console.WriteLine($"In the unlock function with Item:  {item.Name}");
       if (item == UnlockedWith)
       {
         Locked = false;
-        Console.WriteLine("You called your friend to open their door; they couldn't hear you knocking because they were vacuuming.");
+        Console.Clear();
+        Console.WriteLine(@"You called your friend to open their door; they couldn't hear you knocking because they were vacuuming. You may now go north.");
       }
       else if (item != UnlockedWith)
       {
@@ -28,7 +28,7 @@ namespace CastleGrimtol.Project.Models
     {
       UnlockedWith = new Item("test", "testing one two");
       UnlockedWith = unlockedWith;
-      Locked = false;
+      Locked = true;
 
     }
   }

@@ -12,6 +12,8 @@ namespace CastleGrimtol.Project
     public Player CurrentPlayer { get; set; }
     public Item Phone { get; set; }
     LockedRoom FriendsHouse { get; set; }
+
+    Room Home { get; set; }
     public bool Playing { get; set; }
     public List<string> Commands { get; set; }
     public List<Item> FatalFoods { get; set; }
@@ -54,30 +56,32 @@ namespace CastleGrimtol.Project
       Commands.Add("Look");
       Commands.Add("Quit");
       Commands.Add("Reset");
+      Commands.Add("Clear");
 
       Item EpiPen = new Item("EpiPen", "Kicks like a mule, saves like a lifeguard");
       Phone = new Item("Phone", "Great for calling friends or 911");
       Item Snack = new Item("Snack", "A filling, allergen free snack");
       Item Coffee = new Item("Coffee", "As long as it's not Hazelnut, you're probably safe");
       Item Muffin = new Item("Muffin", "This muffin is iterally surrounded by other pastries that contain nuts.");
-      Item GranolaBar = new Item("GranolaBar", "You should know better than to ever eat a granola bar.");
+      Item GranolaBar = new Item("GranolaBar", "You should know better than to ever eat a granolabar.");
       Item KaleChips = new Item("KaleChips", "No ingredients listed.");
       Item Sandwich = new Item("Sandwich on Whole Grain Bread", "Who doesn't love a good turkey sandwich?");
       Item Taco = new Item("Taco", "Not a lot of nuts in Mexican Cuisine");
 
       //initialize all rooms here
       //Items: game - if you use game then place fills up with people; coffee; 
-      Room Main = new Room("Living room", @"You are at home in your living room. On your coffee table is an EpiPen,
-       your phone, and a snack. To the north is your front door which leads to a Hiking Trail.");
+      Room Main = new Room("Living room", @"
+      You are at home in your living room. Your day has just started and you have two friends to meet and a work event
+      to go to. On your coffee table is an EpiPen, your phone, and a snack. To the north is your front door which leads 
+      to a Hiking Trail.");
       FriendsHouse = new LockedRoom("Friends house", "Your friend's door is locked.", Phone);
-      Console.WriteLine(FriendsHouse.UnlockedWith.Name);
       Room Hiking = new Room("Hiking Trail", @"
-      You are on a dirt hiking trail, surrounded by trees and sunlight. You are hungry and pass a stranger,
-      they offer you a granola bar. You may take it or you may continue north to your Friends house.");
+      You are on a dirt hiking trail, surrounded by trees and sunlight. To the north is your friend's house. You are meeting up before going out for coffee at a cool cafe he's been talking about. However, it's still a bit of a walk and you are hungry. You pass someone you know on the trail and they offer you a granola bar.
+      They offer you a granolabar. You may take it, or you may continue north to your Friends house.");
       Room VeganCafe = new Room("you're at a vegan cafe meeting a friend", @"
-      Do you just drink coffee or risk it for some baked goods that may contain nuts");
-      Room Work = new Room("you're at a work event", "do you order a sandwich or a taco");
-      Room Home = new Room("Home", "you made it home to your own kitchen, you win the game!");
+      The cool new cafe you're at happens to be a vegan cafe. They have delicious, fresh baked goods. You have your eye on a muffin, however it might be questioinable as you know those kooky vegans love their nuts. Do you take the muffin or just take a coffee? After you're done at the cafe, you can head east to your work event. ");
+      Room Work = new Room("you're at a work event", @"You made it to you work lunch! It's a catered event and they're offering sandwiches and tacos. Which one do you choose? After this, you can head south back home.");
+      Room Home = new Room("Home", "You made it Home!");
 
       Main.AddExit("north", Hiking);
       Hiking.AddExit("south", Main);
@@ -111,7 +115,7 @@ namespace CastleGrimtol.Project
     }
     public void InvitePlayer()
     {
-      Console.Write($"Welcome to the Dangerous Game of Having a Nut Allergy. In this game you will navigate through life with a nut allergy. If you can make it through your day without dying and make it home to your kitchen, then you win. Would you like to play? y/n:  ");
+      Console.Write($"Welcome to the Dangerous Game of Having a Nut Allergy. In this game you will navigate through your day trying to avoid eating anything that might cause an allergic reaction. If you can make it through your day without dying and make it home to your kitchen, then you win. Would you like to play? y/n:  ");
       string Input = Console.ReadLine().ToLower();
       if (Input == "y")
       {
@@ -145,6 +149,9 @@ namespace CastleGrimtol.Project
       }
       switch (Command)
       {
+        case "clear":
+          Clear();
+          break;
         case "go":
           Go(Option);
           break;
@@ -172,7 +179,6 @@ namespace CastleGrimtol.Project
           if (Option == "phone")
           {
             Item Phone = validatePlayerInventory(Option);
-            Console.WriteLine($"{Phone.Name} is getting passed along");
             FriendsHouse.Unlock(Phone);
             break;
           }
@@ -196,12 +202,9 @@ namespace CastleGrimtol.Project
       Item validated = CurrentPlayer.Inventory.Find(i => i.Name.ToLower() == itemName);
       if (validated != null)
       {
-        Console.WriteLine($"{validated.Name} is getting validated");
         return validated;
       }
-      Console.WriteLine("But it's gone too far");
       validated = new Item("Not a valid item", "Not a valid item");
-      Console.WriteLine("it's not getting validated");
       return validated;
     }
 
@@ -209,8 +212,23 @@ namespace CastleGrimtol.Project
     public void Go(string direction)
     {
       CurrentRoom = (Room)CurrentRoom.EnterRoom(direction);
-      Console.WriteLine($"You are standing in the {CurrentRoom.Name}. {CurrentRoom.Description}");
+      Console.Clear();
+      if (CurrentRoom.Name == "Home")
+      {
+        WinGame();
+      }
+      Console.WriteLine(CurrentRoom.Description);
       GetUserInput();
+    }
+    public void Clear()
+    {
+      Console.Clear();
+    }
+    public void WinGame()
+    {
+      Console.WriteLine("You made it home without dying! You can now make safe food in your own kitchen. You win!!!!");
+      Thread.Sleep(7000);
+      Play();
     }
 
     public void Help()
@@ -277,13 +295,13 @@ namespace CastleGrimtol.Project
       {
         Console.WriteLine($@"You are allergic to {itemName} however you have used your Epi Pen!
         Unfortuntely, you are now saddled with $10,000 in medical bills, so you still lose.");
-        Thread.Sleep(5000);
+        Thread.Sleep(7000);
         Play();
       }
       else if (found != null)
       {
         Console.WriteLine($"Your allergy strikes again! {found.Description}");
-        Thread.Sleep(5000);
+        Thread.Sleep(7000);
         Play();
       }
       else
@@ -304,8 +322,7 @@ namespace CastleGrimtol.Project
           CurrentPlayer.Inventory.Add(found);
           CurrentRoom.Items.Remove(found);
           Console.Clear();
-          Console.WriteLine($@"You have added {found.Name} to your inventory.
-    {found.Description}");
+          Console.WriteLine($@"You have added {found.Name} to your inventory.{found.Description}");
 
         }
         if (found == null)
